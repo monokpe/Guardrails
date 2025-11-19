@@ -130,3 +130,5 @@ dmypy.json
 # private data
 new_venv/
 *.db
+test_result*.txt
+.env.local
