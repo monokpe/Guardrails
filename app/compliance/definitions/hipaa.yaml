@@ -1,0 +1,141 @@
+framework: HIPAA
+
+rules:
+  - id: hipaa_001
+    name: "PHI - Patient Name Detection"
+    description: "Detects patient names which are considered PHI under HIPAA"
+    severity: high
+    action: redact
+    entity_types:
+      - PERSON
+    keywords:
+      - patient name
+      - pt name
+    remediation: "Remove or redact patient names from communications and records"
+
+  - id: hipaa_002
+    name: "PHI - Medical Record Number"
+    description: "Detects medical record numbers which are protected health information"
+    severity: critical
+    action: block
+    keywords:
+      - MRN
+      - medical record number
+      - record #
+    patterns:
+      - '\bMRN\s*[:=]?\s*\d{6,10}\b'
+      - '\bMRN\b\s*\d{6,10}'
+    remediation: "Do not transmit Medical Record Numbers in unsecured communications"
+
+  - id: hipaa_003
+    name: "PHI - Social Security Number"
+    description: "Detects SSN which is considered PHI"
+    severity: critical
+    action: block
+    entity_types:
+      - SSN
+    patterns:
+      - '\b\d{3}-\d{2}-\d{4}\b'
+      - '\b\d{9}\b'
+    remediation: "Never transmit SSN in plain text; use secure channels only"
+
+  - id: hipaa_004
+    name: "PHI - Health Insurance Information"
+    description: "Detects health insurance IDs and related information"
+    severity: high
+    action: redact
+    keywords:
+      - insurance ID
+      - policy number
+      - member ID
+      - group number
+    patterns:
+      - '(?i)\b(insurance|policy|member|group)\s*(id|number|#)\s*[:=]?\s*\w{5,15}\b'
+    remediation: "Redact insurance-related identifiers from patient communications"
+
+  - id: hipaa_005
+    name: "PHI - Diagnosis and Treatment"
+    description: "Detects sensitive diagnosis and treatment information"
+    severity: high
+    action: flag
+    keywords:
+      - diagnosis
+      - treatment plan
+      - medication
+      - prescription
+      - hospitalized
+      - surgery
+      - cancer
+      - HIV
+      - psychiatric
+      - mental health
+    remediation: "Use secure communication channels for diagnosis and treatment details"
+
+  - id: hipaa_006
+    name: "PHI - Date of Birth"
+    description: "Detects dates of birth which are part of PHI"
+    severity: high
+    action: redact
+    entity_types:
+      - DATE
+    keywords:
+      - DOB
+      - date of birth
+      - born
+    patterns:
+      - '(?i)(DOB|date of birth)\s*[:=]?\s*\d{1,2}[/-]\d{1,2}[/-]\d{2,4}'
+    remediation: "Redact or use date ranges instead of exact dates of birth"
+
+  - id: hipaa_007
+    name: "PHI - Contact Information"
+    description: "Detects phone numbers and email addresses linked to patients"
+    severity: medium
+    action: flag
+    entity_types:
+      - PHONE_NUMBER
+      - EMAIL
+    keywords:
+      - patient phone
+      - patient email
+      - contact information
+    remediation: "Use patient portals or secure messaging for contact information"
+
+  - id: hipaa_008
+    name: "PHI - Genetic and Biometric Data"
+    description: "Detects genetic test results and biometric information"
+    severity: high
+    action: block
+    keywords:
+      - genetic test
+      - DNA
+      - biometric
+      - fingerprint
+      - iris scan
+      - genetic marker
+    remediation: "Restrict access to genetic and biometric data to authorized personnel only"
+
+  - id: hipaa_009
+    name: "HIPAA Violation - Unsecured Email"
+    description: "Detects keywords indicating PHI being sent via unsecured email"
+    severity: critical
+    action: block
+    keywords:
+      - send via email
+      - email to patient
+      - forward to email
+      - attach medical record
+      - email PHI
+    remediation: "Use HIPAA-compliant secure messaging instead of email"
+
+  - id: hipaa_010
+    name: "HIPAA Violation - Unencrypted Transmission"
+    description: "Detects attempts to transmit unencrypted PHI"
+    severity: critical
+    action: block
+    keywords:
+      - send unencrypted
+      - no encryption
+      - plain text transmission
+      - unprotected access
+      - send via text
+    remediation: "Always encrypt PHI before transmission using HIPAA-approved methods"

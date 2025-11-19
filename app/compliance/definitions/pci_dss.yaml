@@ -1,0 +1,112 @@
+framework: PCI_DSS
+
+rules:
+  - id: pci_001
+    name: "Cardholder Data - Credit Card Number"
+    description: "Detects credit card numbers which are Cardholder Data under PCI-DSS"
+    severity: critical
+    action: block
+    entity_types:
+      - CREDIT_CARD
+    patterns:
+      - '\b\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}\b'
+      - '\b\d{13,19}\b'
+    keywords:
+      - credit card number
+      - card number
+      - CC #
+      - card no
+    remediation: "Never transmit full credit card numbers; use tokenization or encryption"
+
+  - id: pci_002
+    name: "Cardholder Data - CVV"
+    description: "Detects CVV/CVC codes which must never be stored"
+    severity: critical
+    action: block
+    keywords:
+      - CVV
+      - CVC
+      - security code
+      - card verification value
+    patterns:
+      - '(?i)(CVV|CVC)\s*[:=]?\s*\d{3,4}'
+    remediation: "Never store, display, or transmit CVV codes; delete immediately after authorization"
+
+  - id: pci_003
+    name: "Cardholder Data - Expiration Date"
+    description: "Detects credit card expiration dates"
+    severity: high
+    action: redact
+    keywords:
+      - expiration date
+      - exp date
+      - expires
+      - valid thru
+    patterns:
+      - '(?i)(exp|expir|valid)\s*[:=]?\s*\d{1,2}[/-]\d{2,4}'
+      - '\b(0[1-9]|1[0-2])[/-]\d{2,4}\b'
+    remediation: "Mask expiration dates or use tokenization"
+
+  - id: pci_004
+    name: "Cardholder Data - Cardholder Name"
+    description: "Detects cardholder names linked to payment data"
+    severity: high
+    action: redact
+    entity_types:
+      - PERSON
+    keywords:
+      - cardholder name
+      - name on card
+      - card holder
+    remediation: "Mask cardholder names or use encryption"
+
+  - id: pci_005
+    name: "PCI-DSS Violation - Unencrypted Transmission"
+    description: "Detects transmission of cardholder data without encryption"
+    severity: critical
+    action: block
+    keywords:
+      - send unencrypted
+      - no SSL
+      - no TLS
+      - plain text credit card
+      - unencrypted payment
+    remediation: "Use TLS 1.2+ encryption for all cardholder data transmission"
+
+  - id: pci_006
+    name: "PCI-DSS Violation - Storage of Sensitive Data"
+    description: "Detects improper storage of sensitive authentication data"
+    severity: critical
+    action: block
+    keywords:
+      - store password
+      - save PIN
+      - cache CVV
+      - backup credit card
+      - archive payment data
+    remediation: "Never store sensitive authentication data; implement secure payment processing"
+
+  - id: pci_007
+    name: "PCI-DSS Violation - Unsecured Access"
+    description: "Detects unsecured access to cardholder data"
+    severity: high
+    action: block
+    keywords:
+      - public database
+      - no password
+      - no access control
+      - default credentials
+      - open database
+    remediation: "Implement access controls and multi-factor authentication for payment systems"
+
+  - id: pci_008
+    name: "PCI-DSS Violation - No Audit Logging"
+    description: "Detects lack of logging for payment transactions"
+    severity: high
+    action: flag
+    keywords:
+      - no audit log
+      - no transaction log
+      - logging disabled
+      - no monitoring
+    remediation: "Implement comprehensive logging and monitoring of all payment access"

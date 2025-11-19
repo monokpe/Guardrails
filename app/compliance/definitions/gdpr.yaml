@@ -1,0 +1,112 @@
+framework: GDPR
+
+rules:
+  - id: gdpr_001
+    name: "Personal Data - Name"
+    description: "Detects personally identifiable names under GDPR Article 4(1)"
+    severity: high
+    action: redact
+    entity_types:
+      - PERSON
+    keywords:
+      - first name
+      - last name
+      - full name
+      - subject name
+    remediation: "Anonymize personal names or obtain explicit consent for processing"
+
+  - id: gdpr_002
+    name: "Personal Data - Email Address"
+    description: "Detects email addresses which are personal data under GDPR"
+    severity: high
+    action: redact
+    entity_types:
+      - EMAIL
+    keywords:
+      - email
+      - e-mail
+      - email address
+      - contact email
+    remediation: "Pseudonymize email addresses or limit access to authorized processors"
+
+  - id: gdpr_003
+    name: "Personal Data - Phone Number"
+    description: "Detects phone numbers which are personal data"
+    severity: high
+    action: redact
+    entity_types:
+      - PHONE_NUMBER
+    keywords:
+      - phone number
+      - telephone
+      - mobile number
+      - cell phone
+    remediation: "Store phone numbers securely and limit to necessary recipients"
+
+  - id: gdpr_004
+    name: "Personal Data - Location"
+    description: "Detects location data and addresses"
+    severity: medium
+    action: flag
+    entity_types:
+      - GPE
+      - LOCATION
+    keywords:
+      - address
+      - street address
+      - postal code
+      - GPS coordinates
+      - location data
+    remediation: "Implement location data minimization and use geofencing where appropriate"
+
+  - id: gdpr_005
+    name: "GDPR Right to Be Forgotten Violation"
+    description: "Detects scenarios where data subject's right to erasure is at risk"
+    severity: critical
+    action: block
+    keywords:
+      - retain personal data
+      - permanent storage
+      - backup archive
+      - never delete
+      - permanent record
+    remediation: "Implement data retention policies and erasure procedures per Article 17"
+
+  - id: gdpr_006
+    name: "GDPR Consent Violation"
+    description: "Detects processing without valid legal basis or consent"
+    severity: high
+    action: block
+    keywords:
+      - process without consent
+      - no legal basis
+      - consent not obtained
+      - unauthorized processing
+      - process without permission
+    remediation: "Obtain explicit consent before processing personal data"
+
+  - id: gdpr_007
+    name: "GDPR Data Transfer Outside EU"
+    description: "Detects international data transfers without proper safeguards"
+    severity: high
+    action: flag
+    keywords:
+      - transfer to third country
+      - send outside EU
+      - export to non-EU
+      - transfer data internationally
+    remediation: "Use Standard Contractual Clauses or Binding Corporate Rules for transfers"
+
+  - id: gdpr_008
+    name: "GDPR Breach Notification Missing"
+    description: "Detects data breach scenarios without notification procedures"
+    severity: critical
+    action: block
+    keywords:
+      - data breach
+      - security incident
+      - unauthorized access
+      - data compromise
+    patterns:
+      - '(?i)(data breach|security incident|unauthorized access)\s*(?!reported|notified|authority)'
+    remediation: "Implement breach notification procedures per Article 33; notify authorities within 72 hours"

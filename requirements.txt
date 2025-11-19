@@ -1,0 +1,31 @@
+# -- Core Web Framework --
+fastapi
+uvicorn[standard]
+python-dotenv
+
+# -- Database --
+# Recommended for production over psycopg2-binary
+# Requires build-essential and libpq-dev in Dockerfile
+psycopg
+psycopg2-binary # Required for SQLAlchemy's default driver
+
+SQLAlchemy
+alembic
+
+# -- Caching & State --
+# Used for rate limiting and idempotency keys
+redis
+celery
+
+# -- Authentication & Security --
+python-jose[cryptography]
+passlib[bcrypt]
+
+# -- NLP/ML & Detection --
+spacy
+transformers
+torch --index-url https://download.pytorch.org/whl/cpu
+tiktoken # For accurate OpenAI token counting
+
+# -- Testing --
+httpx

@@ -1,0 +1,133 @@
+"""
+Compliance Engine - Data Models
+
+Defines the ComplianceRule and ComplianceViolation data structures
+used throughout the compliance evaluation pipeline.
+"""
+
+from typing import List, Dict, Optional
+from dataclasses import dataclass
+from enum import Enum
+
+
+class Severity(str, Enum):
+    """Violation severity levels"""
+
+    CRITICAL = "critical"
+    HIGH = "high"
+    MEDIUM = "medium"
+    LOW = "low"
+
+
+class ComplianceAction(str, Enum):
+    """Actions to take when a rule is violated"""
+
+    BLOCK = "block"  # Reject the request entirely
+    REDACT = "redact"  # Redact the matching content
+    FLAG = "flag"  # Log the violation but allow request
+
+
+@dataclass
+class ComplianceRule:
+    """
+    A compliance rule that checks for specific violations.
+
+    Rules can be triggered by:
+    - Entity types (e.g., SSN, MEDICAL_ID)
+    - Keywords (e.g., "patient", "diagnosis")
+    - Patterns (e.g., regex for ICD codes)
+    """
+
+    id: str
+    framework: str
+    name: str
+    description: str
+    severity: Severity
+
+    # Matching criteria
+    entity_types: List[str] = None  # PII entity types to match
+    keywords: List[str] = None  # Keywords that trigger rule
+    patterns: List[str] = None  # Regex patterns to match
+
+    # Action when matched
+    action: ComplianceAction = ComplianceAction.FLAG
+    remediation: str = ""  # User-friendly fix message
+
+    def __post_init__(self):
+        if self.entity_types is None:
+            self.entity_types = []
+        if self.keywords is None:
+            self.keywords = []
+        if self.patterns is None:
+            self.patterns = []
+
+        # Ensure severity is proper enum
+        if isinstance(self.severity, str):
+            self.severity = Severity(self.severity)
+        if isinstance(self.action, str):
+            self.action = ComplianceAction(self.action)
+
+
+@dataclass
+class ComplianceViolation:
+    """A single compliance violation detected in the content"""
+
+    rule_id: str
+    framework: str
+    rule_name: str
+    severity: Severity
+    message: str
+    remediation: str
+    action: ComplianceAction
+    matched_content: Optional[str] = None  # The content that triggered the rule
+    entity_types: List[str] = None  # Entity types involved
+
+    def __post_init__(self):
+        if self.entity_types is None:
+            self.entity_types = []
+        if isinstance(self.severity, str):
+            self.severity = Severity(self.severity)
+        if isinstance(self.action, str):
+            self.action = ComplianceAction(self.action)
+
+
+@dataclass
+class ComplianceResult:
+    """Overall compliance check result"""
+
+    frameworks_checked: List[str]
+    violations: List[ComplianceViolation]
+    compliant: bool  # True if no critical/high violations
+
+    @property
+    def critical_violations(self) -> List[ComplianceViolation]:
+        """Get all critical violations"""
+        return [v for v in self.violations if v.severity == Severity.CRITICAL]
+
+    @property
+    def high_violations(self) -> List[ComplianceViolation]:
+        """Get all high severity violations"""
+        return [v for v in self.violations if v.severity == Severity.HIGH]
+
+    @property
+    def summary(self) -> Dict:
+        """Return summary of violations by severity"""
+        return {
+            "total": len(self.violations),
+            "critical": len(self.critical_violations),
+            "high": len(self.high_violations),
+            "medium": len(
+                [v for v in self.violations if v.severity == Severity.MEDIUM]
+            ),
+            "low": len([v for v in self.violations if v.severity == Severity.LOW]),
+        }
+
+
+class ComplianceFramework(str, Enum):
+    """Supported compliance frameworks"""
+
+    HIPAA = "HIPAA"
+    GDPR = "GDPR"
+    PCI_DSS = "PCI-DSS"
+    SOC2 = "SOC2"
+    CCPA = "CCPA"
