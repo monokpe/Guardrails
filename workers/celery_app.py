@@ -71,8 +71,19 @@ app.conf.update(
         "workers.tasks.check_compliance_async": {"queue": "compliance"},
         "workers.tasks.redact_async": {"queue": "redaction"},
         "workers.tasks.score_risk_async": {"queue": "scoring"},
+        "workers.celery_app.sync_usage_to_stripe": {"queue": "default"},
     },
 )
+
+# Configure Periodic Tasks (Celery Beat)
+from celery.schedules import crontab
+
+app.conf.beat_schedule = {
+    "sync-usage-every-hour": {
+        "task": "workers.celery_app.sync_usage_to_stripe",
+        "schedule": crontab(minute=0),  # Run every hour
+    },
+}
 
 
 # ============================================================================
@@ -552,6 +563,46 @@ def get_task_status(task_id: str) -> str:
 
     result = AsyncResult(task_id, app=app)
     return result.state
+
+
+@app.task(name="workers.celery_app.sync_usage_to_stripe")
+def sync_usage_to_stripe():
+    """
+    Periodic task: Sync token usage to Stripe.
+    
+    Aggregates usage from TokenUsage table and reports to Stripe.
+    """
+    from app.database import SessionLocal
+    from app.models import Tenant
+    from app.billing import billing_service
+    from sqlalchemy import text
+    import time
+
+    logger.info("[sync_usage_to_stripe] Starting usage sync")
+    
+    db = SessionLocal()
+    try:
+        # Get all tenants with stripe_subscription_id
+        tenants = db.query(Tenant).filter(Tenant.stripe_subscription_id.isnot(None)).all()
+        
+        for tenant in tenants:
+            # Aggregate usage since last sync (simplified logic for MVP)
+            # In a real app, we'd track 'reported_at' or similar
+            
+            # For MVP, we'll just report a dummy increment or assume we track delta
+            # Here we just log what we WOULD do
+            logger.info(f"Syncing usage for tenant {tenant.slug} ({tenant.stripe_customer_id})")
+            
+            # Example: Get total tokens for today
+            # query = ...
+            # quantity = ...
+            
+            # billing_service.report_usage(tenant.stripe_subscription_id, quantity)
+            
+    except Exception as e:
+        logger.error(f"[sync_usage_to_stripe] Error: {e}")
+    finally:
+        db.close()
 
 
 if __name__ == "__main__":

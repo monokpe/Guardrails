@@ -25,6 +25,18 @@ class HealthCheckResponse(BaseModel):
 
 rate_limiter = RateLimiter(requests_per_minute=100)
 
+# Initialize Sentry
+import sentry_sdk
+import os
+
+SENTRY_DSN = os.getenv("SENTRY_DSN")
+if SENTRY_DSN:
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        traces_sample_rate=1.0,
+        profiles_sample_rate=1.0,
+    )
+
 app = FastAPI(
     title="Guardrails API",
     description="API for real-time content filtering and compliance.",
@@ -33,6 +45,17 @@ app = FastAPI(
 
 # Add tenant context middleware
 app.add_middleware(TenantContextMiddleware)
+
+# Add CORS middleware
+from fastapi.middleware.cors import CORSMiddleware
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Configure this for production
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Include routers
 app.include_router(async_router)

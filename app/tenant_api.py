@@ -50,6 +50,15 @@ def create_tenant(
         slug=slug,
         plan=tenant_data.plan or "basic",
     )
+
+    # Create Stripe Customer
+    from .billing import billing_service
+    stripe_id = billing_service.create_customer(
+        email=f"admin@{slug}.com", # Placeholder email
+        name=tenant_data.name
+    )
+    if stripe_id:
+        tenant.stripe_customer_id = stripe_id
     
     try:
         db.add(tenant)
