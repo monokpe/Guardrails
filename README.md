@@ -469,13 +469,11 @@ guardrails/
 - [x] Stripe billing integration
 - [x] Sentry monitoring
 - [x] Analytics dashboard
-
-### 🚧 In Progress
-- [ ] LangChain plugin
-- [ ] Bubble.io connector
-- [ ] Enhanced redaction (preserving format)
+- [x] Enhanced redaction (multiple strategies: partial masking, format preservation, hashing)
 
 ### 📝 Planned
+- [ ] LangChain plugin
+- [ ] Bubble.io connector
 - [ ] Real-time streaming analysis
 - [ ] Custom model fine-tuning
 - [ ] Zapier integration
