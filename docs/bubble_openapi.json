@@ -1,0 +1,102 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Guardrails API (Bubble Connector)",
+    "version": "1.0.0",
+    "description": "Real-time AI prompt compliance and security API. Optimized for Bubble.io."
+  },
+  "servers": [
+    {
+      "url": "https://api.guardrails.dev",
+      "description": "Production Server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "security": [
+    {
+      "BearerAuth": []
+    }
+  ],
+  "paths": {
+    "/v1/analyze": {
+      "post": {
+        "summary": "Analyze Prompt",
+        "description": "Check a prompt for PII, injection attacks, and compliance violations.",
+        "operationId": "analyzePrompt",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "prompt": {
+                    "type": "string",
+                    "example": "My name is John Doe and my SSN is 123-45-6789"
+                  }
+                },
+                "required": ["prompt"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Analysis Result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "request_id": { "type": "string" },
+                    "status": { "type": "string" },
+                    "sanitized_prompt": { "type": "string" },
+                    "detections": {
+                      "type": "object",
+                      "properties": {
+                        "pii_found": { "type": "boolean" },
+                        "injection_detected": { "type": "boolean" },
+                        "injection_score": { "type": "number" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/health": {
+      "get": {
+        "summary": "Health Check",
+        "operationId": "healthCheck",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "API is healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string" },
+                    "version": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -131,3 +131,4 @@ class ComplianceFramework(str, Enum):
     PCI_DSS = "PCI-DSS"
     SOC2 = "SOC2"
     CCPA = "CCPA"
+    PIPEDA = "PIPEDA"
