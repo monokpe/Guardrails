@@ -1,0 +1,84 @@
+{
+  "platformVersion": "10.0.0",
+  "version": "1.0.0",
+  "authentication": {
+    "type": "custom",
+    "test": {
+      "url": "https://api.guardrails.dev/v1/health"
+    },
+    "fields": [
+      {
+        "key": "api_key",
+        "type": "string",
+        "required": true,
+        "helpText": "Your Guardrails API Key"
+      }
+    ],
+    "connectionLabel": "{{bundle.authData.api_key}}"
+  },
+  "triggers": {
+    "new_violation": {
+      "key": "new_violation",
+      "noun": "Violation",
+      "display": {
+        "label": "New Compliance Violation",
+        "description": "Triggers when a new compliance violation is detected."
+      },
+      "operation": {
+        "type": "polling",
+        "perform": {
+          "url": "https://api.guardrails.dev/v1/analytics/violations",
+          "method": "GET"
+        },
+        "sample": {
+          "id": "viol_123",
+          "rule_id": "hipaa_001",
+          "severity": "high",
+          "message": "PHI Detected: Patient Name",
+          "created_at": "2023-10-27T10:00:00Z"
+        }
+      }
+    }
+  },
+  "actions": {
+    "analyze_prompt": {
+      "key": "analyze_prompt",
+      "noun": "Analysis",
+      "display": {
+        "label": "Analyze Prompt",
+        "description": "Check text for PII, injection, and compliance violations."
+      },
+      "operation": {
+        "perform": {
+          "url": "https://api.guardrails.dev/v1/analyze",
+          "method": "POST",
+          "body": {
+            "prompt": "{{bundle.inputData.prompt}}"
+          },
+          "headers": {
+            "Authorization": "Bearer {{bundle.authData.api_key}}",
+            "Content-Type": "application/json"
+          }
+        },
+        "inputFields": [
+          {
+            "key": "prompt",
+            "type": "string",
+            "required": true,
+            "label": "Prompt Text",
+            "helpText": "The text to analyze."
+          }
+        ],
+        "sample": {
+          "request_id": "req_123",
+          "status": "completed",
+          "sanitized_prompt": "Hello [PERSON]",
+          "detections": {
+            "pii_found": true,
+            "injection_detected": false
+          }
+        }
+      }
+    }
+  }
+}

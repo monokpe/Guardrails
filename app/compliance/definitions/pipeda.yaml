@@ -1,0 +1,59 @@
+framework: PIPEDA
+
+rules:
+  - id: pipeda_001
+    name: "Social Insurance Number (SIN)"
+    description: "Detects Canadian Social Insurance Numbers (SIN)"
+    severity: critical
+    action: redact
+    entity_types:
+      - SIN
+    patterns:
+      - '\b\d{3}[-\s]?\d{3}[-\s]?\d{3}\b'
+    remediation: "Redact SINs immediately; collection is restricted to specific government programs and financial reporting"
+
+  - id: pipeda_002
+    name: "Canadian Postal Code"
+    description: "Detects Canadian postal codes (A1A 1A1 format)"
+    severity: medium
+    action: redact
+    entity_types:
+      - POSTAL_CODE
+    patterns:
+      - '\b[A-Za-z]\d[A-Za-z][ -]?\d[A-Za-z]\d\b'
+    remediation: "Redact precise location data unless necessary for service delivery"
+
+  - id: pipeda_003
+    name: "Personal Information - Contact Details"
+    description: "Detects contact info (Phone, Email) under PIPEDA"
+    severity: high
+    action: redact
+    entity_types:
+      - PHONE_NUMBER
+      - EMAIL
+    remediation: "Obtain meaningful consent before collecting contact information"
+
+  - id: pipeda_004
+    name: "PIPEDA Data Residency Warning"
+    description: "Detects intent to store data outside Canada without notification"
+    severity: high
+    action: flag
+    keywords:
+      - store in US
+      - US server
+      - foreign server
+      - outside Canada
+      - cross-border transfer
+    remediation: "Notify individuals if their data will be stored or processed outside Canada"
+
+  - id: pipeda_005
+    name: "PIPEDA Consent Violation"
+    description: "Detects processing without valid consent"
+    severity: high
+    action: block
+    keywords:
+      - without consent
+      - no permission
+      - implied consent only
+      - opt-out only
+    remediation: "Obtain explicit, meaningful consent for sensitive information collection"
