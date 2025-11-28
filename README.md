@@ -512,7 +512,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - **Documentation**: Check `/docs` folder for detailed guides
 - **Issues**: Open a GitHub issue for bugs or feature requests
-- **Email**: support@guardrails.dev (if applicable)
+- **Email**: onokpejames@gmail.com (if applicable)
 
 ---
 
