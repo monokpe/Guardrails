@@ -7,6 +7,7 @@ Guardrails is a real-time API firewall that filters AI prompts before they reach
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.109+-green.svg)](https://fastapi.tiangolo.com/)
+[![CI](https://github.com/monokpe/Guardrails/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/monokpe/Guardrails/actions/workflows/ci.yml)
 
 ---
 
@@ -17,6 +18,7 @@ Guardrails is a real-time API firewall that filters AI prompts before they reach
 **For Compliance Teams** - Plug-and-play firewall for GPT-based systems with audit trails
 
 ### Key Problems Solved
+
 - ✅ **PII Leakage Prevention** - Detect and redact sensitive data before it reaches third-party LLMs
 - ✅ **Prompt Injection Defense** - Block malicious prompts attempting to manipulate AI behavior
 - ✅ **Regulatory Compliance** - Enforce HIPAA, GDPR, and PCI-DSS rules with contextual analysis
@@ -28,30 +30,35 @@ Guardrails is a real-time API firewall that filters AI prompts before they reach
 ## ✨ Features
 
 ### 🔒 Security & Detection
+
 - **PII Detection** - Regex + spaCy NLP for identifying names, emails, SSNs, phone numbers, etc.
 - **Prompt Injection Detection** - HuggingFace transformer-based classifier
 - **Content Redaction** - Smart replacement preserving context while removing sensitive data
 - **Risk Scoring** - Weighted violation detection with configurable thresholds
 
 ### 📋 Compliance Engine
+
 - **HIPAA Support** - PHI detection and electronic audit controls
 - **GDPR Compliance** - Personal data classification and processing logs
 - **PCI-DSS Rules** - Credit card and financial data protection
 - **Custom Frameworks** - Extensible rule system for additional compliance needs
 
 ### 🏢 Multi-Tenancy
+
 - **API Key Authentication** - JWT-based secure access control
 - **Tenant Isolation** - Database-level segregation of logs and analytics
 - **Per-Tenant Rate Limiting** - Redis-backed request throttling
 - **Webhook Notifications** - Real-time alerts for security events
 
 ### 📊 Analytics & Monitoring
+
 - **GraphQL API** - Flexible querying for logs, usage stats, and violations
 - **Analytics Dashboard** - Visual insights into threat patterns and API usage
 - **Sentry Integration** - Error tracking and performance monitoring
 - **Request Deduplication** - Redis caching for identical prompts (5-minute TTL)
 
 ### 💳 Billing & Usage
+
 - **Stripe Metered Billing** - Automatic usage-based invoicing
 - **Token Tracking** - Accurate OpenAI token counting with tiktoken
 - **Celery Background Jobs** - Asynchronous billing aggregation
@@ -62,6 +69,7 @@ Guardrails is a real-time API firewall that filters AI prompts before they reach
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - **Python 3.12+**
 - **Redis** (optional, for caching and rate limiting)
 - **PostgreSQL** (optional, defaults to SQLite for development)
@@ -69,12 +77,14 @@ Guardrails is a real-time API firewall that filters AI prompts before they reach
 ### Local Setup
 
 #### 1. Clone the Repository
+
 ```bash
 git clone <your-repo-url>
 cd guardrails
 ```
 
 #### 2. Create Virtual Environment
+
 ```bash
 python -m venv venv
 
@@ -86,6 +96,7 @@ venv\Scripts\activate
 ```
 
 #### 3. Install Dependencies
+
 ```bash
 pip install -r requirements.txt
 
@@ -94,11 +105,13 @@ python -m spacy download en_core_web_sm
 ```
 
 #### 4. Configure Environment
+
 ```bash
 cp .env.example .env
 ```
 
 Edit `.env` with your configuration:
+
 ```env
 # Database
 DATABASE_URL=sqlite:///./guardrails_dev.db
@@ -124,11 +137,13 @@ CELERY_RESULT_BACKEND=redis://localhost:6379/0
 ```
 
 #### 5. Run Database Migrations
+
 ```bash
 alembic upgrade head
 ```
 
 #### 6. Start the Server
+
 ```bash
 uvicorn app.main:app --reload
 ```
@@ -136,6 +151,7 @@ uvicorn app.main:app --reload
 Access the API at `http://localhost:8000`
 
 #### 7. Start Celery Worker (Optional, for billing)
+
 ```bash
 # In a separate terminal
 celery -A workers.celery_app worker --loglevel=info
@@ -160,25 +176,28 @@ Access the API at `http://localhost:8000`
 
 ### REST Endpoints
 
-| Endpoint | Method | Description | Auth Required |
-|----------|--------|-------------|---------------|
-| `/v1/health` | GET | Health check | ❌ |
-| `/v1/analyze` | POST | Analyze prompt for threats | ✅ |
-| `/v1/tenants` | POST | Create new tenant | ❌ |
-| `/v1/tenants/{id}` | GET | Get tenant details | ✅ |
-| `/v1/tenants/{id}/keys` | POST | Generate API key | ✅ |
-| `/v1/analytics/usage` | GET | Get usage statistics | ✅ |
-| `/v1/analytics/violations` | GET | Get compliance violations | ✅ |
+| Endpoint                   | Method | Description                | Auth Required |
+| -------------------------- | ------ | -------------------------- | ------------- |
+| `/v1/health`               | GET    | Health check               | ❌            |
+| `/v1/analyze`              | POST   | Analyze prompt for threats | ✅            |
+| `/v1/tenants`              | POST   | Create new tenant          | ❌            |
+| `/v1/tenants/{id}`         | GET    | Get tenant details         | ✅            |
+| `/v1/tenants/{id}/keys`    | POST   | Generate API key           | ✅            |
+| `/v1/analytics/usage`      | GET    | Get usage statistics       | ✅            |
+| `/v1/analytics/violations` | GET    | Get compliance violations  | ✅            |
 
 ### Interactive Documentation
+
 - **Swagger UI**: http://localhost:8000/docs
 - **ReDoc**: http://localhost:8000/redoc
 
 ### GraphQL API
+
 - **Endpoint**: http://localhost:8000/graphql
 - **GraphiQL Playground**: Open endpoint in browser
 
 #### Example GraphQL Query
+
 ```graphql
 query {
   tenantLogs(tenantId: "123", limit: 10) {
@@ -192,6 +211,7 @@ query {
 ```
 
 ### Analytics Dashboard
+
 - **URL**: http://localhost:8000/dashboard
 - **Access**: Requires valid Tenant API Key
 
@@ -200,6 +220,7 @@ query {
 ## 🔧 Usage Examples
 
 ### 1. Create a Tenant
+
 ```bash
 curl -X POST http://localhost:8000/v1/tenants \
   -H "Content-Type: application/json" \
@@ -210,6 +231,7 @@ curl -X POST http://localhost:8000/v1/tenants \
 ```
 
 Response:
+
 ```json
 {
   "id": "550e8400-e29b-41d4-a716-446655440000",
@@ -219,6 +241,7 @@ Response:
 ```
 
 ### 2. Analyze a Prompt
+
 ```bash
 curl -X POST http://localhost:8000/v1/analyze \
   -H "Content-Type: application/json" \
@@ -229,6 +252,7 @@ curl -X POST http://localhost:8000/v1/analyze \
 ```
 
 Response:
+
 ```json
 {
   "request_id": "7c9e6679-7425-40de-944b-e07fc1f90ae7",
@@ -240,12 +264,12 @@ Response:
       {
         "type": "PERSON",
         "value": "John Doe",
-        "position": {"start": 11, "end": 19}
+        "position": { "start": 11, "end": 19 }
       },
       {
         "type": "SSN",
         "value": "123-45-6789",
-        "position": {"start": 34, "end": 45}
+        "position": { "start": 34, "end": 45 }
       }
     ],
     "injection_detected": false,
@@ -256,6 +280,7 @@ Response:
 ```
 
 ### 3. Python SDK Example
+
 ```python
 import requests
 
@@ -283,6 +308,7 @@ print(f"Sanitized: {result['sanitized_prompt']}")
 ## 🧪 Testing
 
 Run the complete test suite:
+
 ```bash
 # All tests
 pytest
@@ -295,6 +321,7 @@ pytest tests/test_detection.py -v
 ```
 
 ### Test Coverage Highlights
+
 - ✅ Multi-tenancy isolation
 - ✅ PII detection accuracy
 - ✅ Prompt injection classification
@@ -308,22 +335,24 @@ pytest tests/test_detection.py -v
 ## 🏗️ Architecture
 
 ### Tech Stack
-| Layer | Technology |
-|-------|------------|
-| **Framework** | FastAPI 0.109+ |
-| **Database** | PostgreSQL 15+ (SQLAlchemy ORM) |
-| **Caching** | Redis 5.0+ |
-| **NLP** | spaCy 3.7+, HuggingFace Transformers |
-| **ML Backend** | PyTorch (CPU-optimized) |
-| **Task Queue** | Celery 5.3+ |
-| **API Layer** | GraphQL (Strawberry), REST |
-| **Auth** | JWT (python-jose) |
-| **Billing** | Stripe 8.1+ |
-| **Monitoring** | Sentry 1.40+ |
-| **Migrations** | Alembic |
-| **Frontend** | React + Tailwind CSS |
+
+| Layer          | Technology                           |
+| -------------- | ------------------------------------ |
+| **Framework**  | FastAPI 0.109+                       |
+| **Database**   | PostgreSQL 15+ (SQLAlchemy ORM)      |
+| **Caching**    | Redis 5.0+                           |
+| **NLP**        | spaCy 3.7+, HuggingFace Transformers |
+| **ML Backend** | PyTorch (CPU-optimized)              |
+| **Task Queue** | Celery 5.3+                          |
+| **API Layer**  | GraphQL (Strawberry), REST           |
+| **Auth**       | JWT (python-jose)                    |
+| **Billing**    | Stripe 8.1+                          |
+| **Monitoring** | Sentry 1.40+                         |
+| **Migrations** | Alembic                              |
+| **Frontend**   | React + Tailwind CSS                 |
 
 ### System Design
+
 ```
 ┌─────────────┐
 │   Client    │
@@ -409,6 +438,7 @@ guardrails/
 ## 🔐 Security Best Practices
 
 ### Production Deployment Checklist
+
 - [ ] Change `SECRET_KEY` and `API_KEY_SALT` to cryptographically secure values
 - [ ] Use PostgreSQL instead of SQLite
 - [ ] Enable HTTPS/TLS for all endpoints
@@ -422,6 +452,7 @@ guardrails/
 - [ ] Review and adjust rate limits per tenant tier
 
 ### Webhook Security
+
 - HMAC-SHA256 signature validation
 - Replay attack prevention (timestamp validation)
 - Configurable secrets per tenant
@@ -442,25 +473,26 @@ guardrails/
 
 ### Environment Variables
 
-| Variable | Description | Default | Required |
-|----------|-------------|---------|----------|
-| `DATABASE_URL` | PostgreSQL connection string | `sqlite:///./guardrails_dev.db` | No |
-| `REDIS_URL` | Redis connection string | `redis://localhost:6379/0` | No |
-| `CACHE_ENABLED` | Enable request caching | `true` | No |
-| `SECRET_KEY` | JWT signing key | - | **Yes** |
-| `API_KEY_SALT` | API key hashing salt | - | **Yes** |
-| `STRIPE_API_KEY` | Stripe secret key | - | No |
-| `STRIPE_PRICE_ID` | Stripe price ID for metering | - | No |
-| `SENTRY_DSN` | Sentry error tracking URL | - | No |
-| `CELERY_BROKER_URL` | Celery message broker | `redis://localhost:6379/0` | No |
-| `DEBUG` | Enable debug mode | `false` | No |
-| `LOG_LEVEL` | Logging verbosity | `INFO` | No |
+| Variable            | Description                  | Default                         | Required |
+| ------------------- | ---------------------------- | ------------------------------- | -------- |
+| `DATABASE_URL`      | PostgreSQL connection string | `sqlite:///./guardrails_dev.db` | No       |
+| `REDIS_URL`         | Redis connection string      | `redis://localhost:6379/0`      | No       |
+| `CACHE_ENABLED`     | Enable request caching       | `true`                          | No       |
+| `SECRET_KEY`        | JWT signing key              | -                               | **Yes**  |
+| `API_KEY_SALT`      | API key hashing salt         | -                               | **Yes**  |
+| `STRIPE_API_KEY`    | Stripe secret key            | -                               | No       |
+| `STRIPE_PRICE_ID`   | Stripe price ID for metering | -                               | No       |
+| `SENTRY_DSN`        | Sentry error tracking URL    | -                               | No       |
+| `CELERY_BROKER_URL` | Celery message broker        | `redis://localhost:6379/0`      | No       |
+| `DEBUG`             | Enable debug mode            | `false`                         | No       |
+| `LOG_LEVEL`         | Logging verbosity            | `INFO`                          | No       |
 
 ---
 
 ## 🗺️ Roadmap
 
 ### ✅ Completed (Phase 1-3)
+
 - [x] Core PII detection
 - [x] Prompt injection classifier
 - [x] Multi-tenant architecture
@@ -472,12 +504,14 @@ guardrails/
 - [x] Enhanced redaction (multiple strategies: partial masking, format preservation, hashing)
 
 ### ✅ Completed (Phase 4 - Integrations)
+
 - [x] PIPEDA compliance framework
 - [x] LangChain plugin
 - [x] Bubble.io connector
 - [x] Zapier integration
 
 ### 📝 Planned
+
 - [ ] Real-time streaming analysis
 - [ ] Custom model fine-tuning
 - [ ] Multi-region deployment support
@@ -495,6 +529,7 @@ Contributions are welcome! Please follow these steps:
 5. Open a Pull Request
 
 ### Development Guidelines
+
 - Write tests for new features
 - Follow PEP 8 style guide
 - Update documentation for API changes
@@ -512,7 +547,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - **Documentation**: Check `/docs` folder for detailed guides
 - **Issues**: Open a GitHub issue for bugs or feature requests
-- **Email**: onokpejames@gmail.com 
+- **Email**: onokpejames@gmail.com
 
 ---
 
