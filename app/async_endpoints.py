@@ -436,7 +436,8 @@ async def get_task_result_endpoint(task_id: str) -> Dict[str, Any]:
         elif result_dict["status"] == "error":
             raise HTTPException(status_code=400, detail=result_dict.get("error", "Task failed"))
 
-        return result_dict.get("result", {})
+        result: Dict[str, Any] = result_dict.get("result", {})
+        return result
 
     except HTTPException:
         raise

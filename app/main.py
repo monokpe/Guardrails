@@ -32,6 +32,9 @@ class HealthCheckResponse(BaseModel):
     version: str
 
 
+# Initialize rate limiter
+rate_limiter = RateLimiter(requests_per_minute=100)
+
 # Initialize Sentry
 SENTRY_DSN = os.getenv("SENTRY_DSN")
 if SENTRY_DSN:

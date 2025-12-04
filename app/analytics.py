@@ -4,7 +4,7 @@ Analytics API endpoints.
 
 import json
 from datetime import datetime, timedelta
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy import desc, func, text
@@ -171,7 +171,7 @@ def get_violations_breakdown(
         .all()
     )
 
-    pii_counts = {}
+    pii_counts: Dict[str, int] = {}
     injection_counts = {"Prompt Injection": 0}
 
     for log in logs:
