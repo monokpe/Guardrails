@@ -1,6 +1,7 @@
 import os
 import threading
 from datetime import datetime, timezone
+from typing import Dict, Optional, Tuple
 
 import redis
 from fastapi import Depends, HTTPException, status
@@ -18,7 +19,7 @@ except Exception:
 
 # In-memory fallback counter for environments without Redis (per-minute fixed window)
 _fallback_lock = threading.Lock()
-_fallback_counters = {}  # key -> (minute_str, count)
+_fallback_counters: Dict[str, Tuple[Optional[str], int]] = {}  # key -> (minute_str, count)
 
 
 class RateLimiter:
