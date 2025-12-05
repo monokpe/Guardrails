@@ -28,6 +28,9 @@ logger = logging.getLogger(__name__)
 
 
 class PIIEncryptor:
+    fernet: Optional[Fernet]
+    enabled: bool
+
     def __init__(self, key: Optional[str] = None):
         if key is None:
             key = secrets.get("PII_ENCRYPTION_KEY") or os.getenv("PII_ENCRYPTION_KEY")

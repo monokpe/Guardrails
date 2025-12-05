@@ -69,7 +69,7 @@ class TokenTracker:
             logger.error(f"TokenTracker: Failed to load tokenizers: {e}")
             raise
 
-    def count_tokens(self, text: str, model: TokenModel = None) -> int:
+    def count_tokens(self, text: str, model: Optional[TokenModel] = None) -> int:
         """
         Count tokens in text using specified model encoding.
 
@@ -94,7 +94,7 @@ class TokenTracker:
             logger.error(f"TokenTracker: Error counting tokens: {e}")
             return len(text) // 4
 
-    def count_tokens_batch(self, texts: List[str], model: TokenModel = None) -> List[int]:
+    def count_tokens_batch(self, texts: List[str], model: Optional[TokenModel] = None) -> List[int]:
         """
         Count tokens for multiple texts efficiently.
 

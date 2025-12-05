@@ -34,6 +34,7 @@ bandit
 pre-commit
 types-redis
 types-requests
+types-PyYAML
 
 # -- Authentication & Security --
 python-jose[cryptography]
