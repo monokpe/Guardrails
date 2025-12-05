@@ -5,7 +5,7 @@ Defines the ComplianceRule and ComplianceViolation data structures
 used throughout the compliance evaluation pipeline.
 """
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
 from typing import Dict, List, Optional
 
@@ -39,9 +39,9 @@ class ComplianceRule:
     description: str
     severity: Severity
 
-    entity_types: List[str] = None
-    keywords: List[str] = None
-    patterns: List[str] = None
+    entity_types: List[str] = field(default_factory=list)
+    keywords: List[str] = field(default_factory=list)
+    patterns: List[str] = field(default_factory=list)
 
     action: ComplianceAction = ComplianceAction.FLAG
     remediation: str = ""
@@ -72,7 +72,7 @@ class ComplianceViolation:
     remediation: str
     action: ComplianceAction
     matched_content: Optional[str] = None
-    entity_types: List[str] = None
+    entity_types: List[str] = field(default_factory=list)
 
     def __post_init__(self):
         if self.entity_types is None:

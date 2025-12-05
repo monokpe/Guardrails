@@ -11,6 +11,7 @@ from .auth import get_current_user
 
 # Connect to Redis (lazy-ish, but we handle connection errors at runtime)
 redis_host = "localhost" if os.environ.get("TESTING") else "redis"
+redis_client: Optional[redis.Redis[str]]
 try:
     redis_client = redis.Redis(host=redis_host, port=6379, db=0, decode_responses=True)
 except Exception:

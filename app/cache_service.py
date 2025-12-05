@@ -18,10 +18,11 @@ CACHE_TTL = int(os.getenv("CACHE_TTL", "300"))  # 5 minutes default
 
 try:
     import redis
+    from redis import Redis
 
     REDIS_AVAILABLE = True
     REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
-    redis_client = redis.from_url(REDIS_URL, decode_responses=True)
+    redis_client: Optional[Redis[str]] = redis.from_url(REDIS_URL, decode_responses=True)
 except (ImportError, redis.ConnectionError) as e:
     REDIS_AVAILABLE = False
     redis_client = None
