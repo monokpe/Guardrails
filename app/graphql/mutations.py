@@ -13,6 +13,7 @@ from sqlalchemy.orm import Session
 from workers.detection import get_injection_score
 
 from .. import cache_service, models
+from .. import logging as local_logging
 from ..detection import detect_pii
 from .types import AnalysisResultType, DetectionResultType, TenantType
 
@@ -176,7 +177,7 @@ class Mutation:
             },
         }
 
-        await logging.log_request(
+        await local_logging.log_request(
             db=db,
             api_key=current_user,
             status_code=200,

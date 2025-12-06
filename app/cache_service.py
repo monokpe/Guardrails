@@ -22,7 +22,7 @@ try:
 
     REDIS_AVAILABLE = True
     REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
-    redis_client: Optional[Redis[str]] = redis.from_url(REDIS_URL, decode_responses=True)
+    redis_client: Optional[Redis] = redis.from_url(REDIS_URL, decode_responses=True)
 except (ImportError, redis.ConnectionError) as e:
     REDIS_AVAILABLE = False
     redis_client = None

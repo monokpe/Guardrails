@@ -43,8 +43,11 @@ passlib[bcrypt]
 # -- NLP/ML & Detection --
 spacy
 transformers
+langchain
 torch --index-url https://download.pytorch.org/whl/cpu
 tiktoken # For accurate OpenAI token counting
 
 # -- Testing --
 httpx
+pytest
+pytest-asyncio
