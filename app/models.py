@@ -50,7 +50,9 @@ class GUID(TypeDecorator):
             return value
 
 
-Base = declarative_base()
+from typing import Any
+
+Base: Any = declarative_base()
 
 
 class Tenant(Base):

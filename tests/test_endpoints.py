@@ -62,30 +62,40 @@ def test_analyze_endpoint_success(client, db_session):
 
 
 def test_rate_limiting(client, db_session):
-    tenant = Tenant(name="Rate Limit Test Tenant", slug="rate-limit-test-tenant")
-    db_session.add(tenant)
-    db_session.commit()
-    customer = Customer(
-        name="Rate Limit Test Customer", email="ratelimit@example.com", tenant_id=tenant.id
-    )
-    db_session.add(customer)
-    db_session.commit()
-    db_session.refresh(customer)
+    # Clear any existing fallback counters and force fallback mode
+    from app import rate_limiting
+    rate_limiting._fallback_counters.clear()
+    original_redis = rate_limiting.redis_client
+    rate_limiting.redis_client = None  # Force fallback mode
 
-    plain_key, api_key = create_api_key(db_session, customer.id)
-    # Set a low rate limit for this key for testing purposes
-    api_key.rate_limit = 2
-    db_session.commit()
+    try:
+        tenant = Tenant(name="Rate Limit Test Tenant", slug="rate-limit-test-tenant")
+        db_session.add(tenant)
+        db_session.commit()
+        customer = Customer(
+            name="Rate Limit Test Customer", email="ratelimit@example.com", tenant_id=tenant.id
+        )
+        db_session.add(customer)
+        db_session.commit()
+        db_session.refresh(customer)
 
-    headers = {"X-API-Key": plain_key}
+        plain_key, api_key = create_api_key(db_session, customer.id)
+        # Set a low rate limit for this key for testing purposes
+        api_key.rate_limit = 2
+        db_session.commit()
 
-    # First two requests should succeed
-    assert client.post("/v1/analyze", json={"prompt": "test 1"}, headers=headers).status_code == 200
-    assert client.post("/v1/analyze", json={"prompt": "test 2"}, headers=headers).status_code == 200
+        headers = {"X-API-Key": plain_key}
 
-    # Third request should be rate limited
-    response = client.post("/v1/analyze", json={"prompt": "test 3"}, headers=headers)
-    assert response.status_code == 429
+        # First two requests should succeed
+        assert client.post("/v1/analyze", json={"prompt": "test 1"}, headers=headers).status_code == 200
+        assert client.post("/v1/analyze", json={"prompt": "test 2"}, headers=headers).status_code == 200
+
+        # Third request should be rate limited
+        response = client.post("/v1/analyze", json={"prompt": "test 3"}, headers=headers)
+        assert response.status_code == 429
+    finally:
+        # Restore original redis client
+        rate_limiting.redis_client = original_redis
 
 
 def test_analyze_endpoint_no_api_key(client):

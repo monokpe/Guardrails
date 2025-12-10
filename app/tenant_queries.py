@@ -81,7 +81,9 @@ def get_tenant_item(
     """
     Get a single item by ID, ensuring it belongs to the current tenant.
     """
-    return get_tenant_query(db, model).filter(cast(Any, model).id == item_id).first()
+    return cast(
+        Optional[T], get_tenant_query(db, model).filter(cast(Any, model).id == item_id).first()
+    )
 
 
 def verify_tenant_ownership(

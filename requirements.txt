@@ -51,3 +51,4 @@ tiktoken # For accurate OpenAI token counting
 httpx
 pytest
 pytest-asyncio
+locust

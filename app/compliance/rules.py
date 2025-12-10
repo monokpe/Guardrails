@@ -5,13 +5,16 @@ Handles parsing YAML rule definitions and converting them to ComplianceRule obje
 Supports validation and rule merging from multiple sources.
 """
 
+import dataclasses
+import json
 import logging
 import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-import yaml
+import yaml  # type: ignore
 
+from app.cache_service import CACHE_ENABLED, REDIS_AVAILABLE, redis_client
 from app.compliance.models import ComplianceAction, ComplianceFramework, ComplianceRule, Severity
 
 logger = logging.getLogger(__name__)
@@ -145,6 +148,7 @@ class RuleLoader:
 def load_compliance_rules(rules_dir: Optional[str] = None) -> List[ComplianceRule]:
     """
     Convenience function to load all compliance rules.
+    Tries to load from Redis cache first if enabled.
 
     Args:
         rules_dir: Optional directory to load from
@@ -152,5 +156,46 @@ def load_compliance_rules(rules_dir: Optional[str] = None) -> List[ComplianceRul
     Returns:
         List of loaded ComplianceRule objects
     """
+    # 1. Try to load from cache
+    if CACHE_ENABLED and REDIS_AVAILABLE and redis_client:
+        try:
+            cache_key = "guardrails:rules:all"
+            cached_data = redis_client.get(cache_key)
+            if cached_data:
+                logger.info("Loading compliance rules from Redis cache")
+                # mypy thinks cached_data could be bytes or Awaitable, but we know it's str due to decode_responses=True
+                rules_dicts = json.loads(str(cached_data))
+                return [ComplianceRule(**r) for r in rules_dicts]
+        except Exception as e:
+            logger.error(f"Error loading rules from cache: {e}")
+
+    # 2. Load from file system if cache miss
+    logger.info("Loading compliance rules from file system")
     loader = RuleLoader(rules_dir)
-    return loader.load_all_rules()
+    rules = loader.load_all_rules()
+
+    # 3. Cache the results
+    if CACHE_ENABLED and REDIS_AVAILABLE and redis_client and rules:
+        try:
+            cache_key = "guardrails:rules:all"
+            # specific helper to handle Enums if needed, but asdict + str mixin might work
+            # For robustness, we turn enums to values via a safe serializer
+
+            class EnumEncoder(json.JSONEncoder):
+                def default(self, obj):
+                    if isinstance(obj, (ComplianceAction, ComplianceFramework, Severity)):
+                        return obj.value
+                    return super().default(obj)
+
+            # Convert dataclasses to dicts first
+            rules_data = [dataclasses.asdict(r) for r in rules]
+
+            # Serialize with custom encoder
+            serialized = json.dumps(rules_data, cls=EnumEncoder)
+
+            redis_client.setex(cache_key, 3600, serialized)  # Cache for 1 hour
+            logger.info("Cached compliance rules to Redis")
+        except Exception as e:
+            logger.error(f"Error caching rules: {e}")
+
+    return rules

@@ -17,7 +17,7 @@ CACHE_ENABLED = os.getenv("CACHE_ENABLED", "true").lower() == "true"
 CACHE_TTL = int(os.getenv("CACHE_TTL", "300"))  # 5 minutes default
 
 try:
-    import redis
+    import redis  # type: ignore
     from redis import Redis
 
     REDIS_AVAILABLE = True
@@ -64,7 +64,7 @@ def get_cached_result(prompt: str, tenant_id: str) -> Optional[Dict[str, Any]]:
 
         if cached_data:
             logger.info(f"Cache hit for tenant {tenant_id}")
-            return cast(Dict[str, Any], json.loads(cached_data))
+            return cast(Dict[str, Any], json.loads(str(cached_data)))
 
         logger.debug(f"Cache miss for tenant {tenant_id}")
         return None
@@ -122,10 +122,10 @@ def clear_tenant_cache(tenant_id: str) -> int:
 
     try:
         pattern = f"guardrails:cache:{tenant_id}:*"
-        keys = redis_client.keys(pattern)
+        keys = cast(list[str], redis_client.keys(pattern))
 
         if keys:
-            deleted = redis_client.delete(*keys)
+            deleted = cast(int, redis_client.delete(*keys))
             logger.info(f"Cleared {deleted} cache entries for tenant {tenant_id}")
             return deleted
 
@@ -143,7 +143,7 @@ def get_cache_stats() -> Dict[str, Any]:
     Returns:
         Dict with cache stats (enabled, available, key count)
     """
-    stats = {
+    stats: Dict[str, Any] = {
         "enabled": CACHE_ENABLED,
         "available": REDIS_AVAILABLE,
         "ttl": CACHE_TTL,
@@ -151,8 +151,8 @@ def get_cache_stats() -> Dict[str, Any]:
 
     if REDIS_AVAILABLE and redis_client:
         try:
-            info = redis_client.info("stats")
-            stats["total_keys"] = redis_client.dbsize()
+            info = cast(Dict[str, Any], redis_client.info("stats"))
+            stats["total_keys"] = cast(int, redis_client.dbsize())
             stats["hits"] = info.get("keyspace_hits", 0)
             stats["misses"] = info.get("keyspace_misses", 0)
         except Exception as e:
