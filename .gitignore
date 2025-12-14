@@ -154,3 +154,6 @@ locust_report*.html
 # Coverage artifacts (additional)
 .coverage
 htmlcov/
+
+# Documentation
+docs/
