@@ -1,12 +1,12 @@
 """
-Guardrails LangChain Integration
+PhiBlock LangChain Integration
 
-This module provides integration with LangChain, allowing you to use Guardrails
+This module provides integration with LangChain, allowing you to use PhiBlock
 as a compliance layer in your LangChain applications.
 
 Classes:
-    GuardrailsCallbackHandler: Intercepts LLM inputs/outputs and checks compliance.
-    GuardrailsRunnable: A Runnable for LCEL chains.
+    PhiBlockCallbackHandler: Intercepts LLM inputs/outputs and checks compliance.
+    PhiBlockRunnable: A Runnable for LCEL chains.
 """
 
 import logging
@@ -21,9 +21,9 @@ from langchain_core.runnables import Runnable, RunnableConfig
 logger = logging.getLogger(__name__)
 
 
-class GuardrailsCallbackHandler(BaseCallbackHandler):
+class PhiBlockCallbackHandler(BaseCallbackHandler):
     """
-    Callback Handler that checks prompts and completions against Guardrails API.
+    Callback Handler that checks prompts and completions against PhiBlock API.
 
     Raises an error or modifies the output if a violation is detected.
     """
@@ -35,7 +35,7 @@ class GuardrailsCallbackHandler(BaseCallbackHandler):
         raise_on_violation: bool = True,
     ):
         self.api_url = api_url.rstrip("/")
-        self.api_key = api_key or os.getenv("GUARDRAILS_API_KEY")
+        self.api_key = api_key or os.getenv("PHIBLOCK_API_KEY")
         self.raise_on_violation = raise_on_violation
 
     def on_llm_start(self, serialized: Dict[str, Any], prompts: List[str], **kwargs: Any) -> None:
@@ -68,7 +68,7 @@ class GuardrailsCallbackHandler(BaseCallbackHandler):
 
             detections = result.get("detections", {})
             if detections.get("pii_found") or detections.get("injection_detected"):
-                msg = f"Guardrails Violation detected in {source}: "
+                msg = f"PhiBlock Violation detected in {source}: "
                 details = []
                 if detections.get("pii_found"):
                     details.append("PII detected")
@@ -88,12 +88,12 @@ class GuardrailsCallbackHandler(BaseCallbackHandler):
             logger.error(f"Error checking compliance: {e}")
 
 
-class GuardrailsRunnable(Runnable):
+class PhiBlockRunnable(Runnable):
     """
-    A LangChain Runnable that passes input through Guardrails API.
+    A LangChain Runnable that passes input through PhiBlock API.
 
     Use this in an LCEL chain:
-    chain = prompt | model | GuardrailsRunnable() | output_parser
+    chain = prompt | model | PhiBlockRunnable() | output_parser
     """
 
     def __init__(
@@ -103,7 +103,7 @@ class GuardrailsRunnable(Runnable):
         mode: str = "analyze",  # analyze, redact, or mask
     ):
         self.api_url = api_url.rstrip("/")
-        self.api_key = api_key or os.getenv("GUARDRAILS_API_KEY")
+        self.api_key = api_key or os.getenv("PHIBLOCK_API_KEY")
         self.mode = mode
 
     def invoke(

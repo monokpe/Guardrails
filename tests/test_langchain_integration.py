@@ -2,7 +2,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from integrations.langchain_integration import GuardrailsCallbackHandler, GuardrailsRunnable
+from integrations.langchain_integration import PhiBlockCallbackHandler, PhiBlockRunnable
 
 
 class TestLangChainIntegration:
@@ -21,13 +21,13 @@ class TestLangChainIntegration:
         }
         mock_requests.post.return_value = mock_response
 
-        handler = GuardrailsCallbackHandler(raise_on_violation=True)
+        handler = PhiBlockCallbackHandler(raise_on_violation=True)
 
         # Should raise ValueError
         with pytest.raises(ValueError) as exc:
             handler.on_llm_start({}, ["My name is John"])
 
-        assert "Guardrails Violation" in str(exc.value)
+        assert "PhiBlock Violation" in str(exc.value)
         assert "PII detected" in str(exc.value)
 
     def test_callback_handler_no_violation(self, mock_requests):
@@ -38,7 +38,7 @@ class TestLangChainIntegration:
         }
         mock_requests.post.return_value = mock_response
 
-        handler = GuardrailsCallbackHandler(raise_on_violation=True)
+        handler = PhiBlockCallbackHandler(raise_on_violation=True)
         # Should not raise
         handler.on_llm_start({}, ["Safe prompt"])
 
@@ -51,7 +51,7 @@ class TestLangChainIntegration:
         }
         mock_requests.post.return_value = mock_response
 
-        runnable = GuardrailsRunnable()
+        runnable = PhiBlockRunnable()
         result = runnable.invoke("Hello John")
 
         assert result == "Hello [PERSON]"

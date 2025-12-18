@@ -24,7 +24,7 @@ REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
 BROKER_URL = os.getenv("BROKER_URL", REDIS_URL)
 RESULT_BACKEND = os.getenv("RESULT_BACKEND", REDIS_URL)
 
-app = Celery("guardrails")
+app = Celery("phiblock")
 
 app.conf.update(
     broker_url=BROKER_URL,

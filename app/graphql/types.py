@@ -1,5 +1,5 @@
 """
-GraphQL type definitions for Guardrails API.
+GraphQL type definitions for PhiBlock API.
 """
 
 import datetime

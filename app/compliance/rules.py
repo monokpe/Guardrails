@@ -12,7 +12,7 @@ import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-import yaml  # type: ignore
+import yaml
 
 from app.cache_service import CACHE_ENABLED, REDIS_AVAILABLE, redis_client
 from app.compliance.models import ComplianceAction, ComplianceFramework, ComplianceRule, Severity
@@ -159,11 +159,12 @@ def load_compliance_rules(rules_dir: Optional[str] = None) -> List[ComplianceRul
     # 1. Try to load from cache
     if CACHE_ENABLED and REDIS_AVAILABLE and redis_client:
         try:
-            cache_key = "guardrails:rules:all"
+            cache_key = "phiblock:rules:all"
             cached_data = redis_client.get(cache_key)
             if cached_data:
                 logger.info("Loading compliance rules from Redis cache")
-                # mypy thinks cached_data could be bytes or Awaitable, but we know it's str due to decode_responses=True
+                # mypy thinks cached_data could be bytes or Awaitable, but we know
+                # it's str due to decode_responses=True
                 rules_dicts = json.loads(str(cached_data))
                 return [ComplianceRule(**r) for r in rules_dicts]
         except Exception as e:
@@ -177,7 +178,7 @@ def load_compliance_rules(rules_dir: Optional[str] = None) -> List[ComplianceRul
     # 3. Cache the results
     if CACHE_ENABLED and REDIS_AVAILABLE and redis_client and rules:
         try:
-            cache_key = "guardrails:rules:all"
+            cache_key = "phiblock:rules:all"
             # specific helper to handle Enums if needed, but asdict + str mixin might work
             # For robustness, we turn enums to values via a safe serializer
 

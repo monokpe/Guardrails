@@ -19,7 +19,7 @@ SAMPLE_PROMPTS = [
 ]
 
 
-class GuardrailsUser(HttpUser):
+class PhiBlockUser(HttpUser):
     """Locust user class simulating API traffic."""
 
     wait_time = between(0.5, 2.0)  # Wait between 0.5 and 2 seconds between tasks

@@ -50,7 +50,7 @@ if SENTRY_DSN:
     )
 
 app = FastAPI(
-    title="Guardrails API",
+    title="PhiBlock API",
     description="API for real-time content filtering and compliance.",
     version="0.1.0",
 )
@@ -62,7 +62,7 @@ register_security(app)
 app.include_router(async_router)
 app.include_router(tenant_router)
 
-graphql_app = GraphQLRouter(schema, context_getter=get_context)
+graphql_app = GraphQLRouter(schema, context_getter=get_context)  # type: ignore
 app.include_router(graphql_app, prefix="/graphql")
 
 app.include_router(analytics_router)

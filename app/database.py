@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session, sessionmaker
 
 logger = logging.getLogger(__name__)
 
-SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://user:password@db/guardrails_db")
+SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://user:password@db/phiblock_db")
 
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL,
@@ -19,7 +19,7 @@ engine = create_engine(
     echo=os.getenv("SQL_ECHO", "false").lower() == "true",
     connect_args={
         "connect_timeout": 5,
-        "application_name": "guardrails_api",
+        "application_name": "phiblock_api",
     },
 )
 

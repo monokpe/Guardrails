@@ -23,7 +23,7 @@ def test_generate_cache_key():
     key = generate_cache_key(prompt, tenant_id)
 
     # Should have correct format
-    assert key.startswith("guardrails:cache:")
+    assert key.startswith("phiblock:cache:")
     assert tenant_id in key
 
     # Same prompt should generate same key

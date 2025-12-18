@@ -1,5 +1,6 @@
 import datetime
 import uuid
+from typing import Any
 
 from sqlalchemy import (
     DECIMAL,
@@ -49,8 +50,6 @@ class GUID(TypeDecorator):
                 value = uuid.UUID(value)
             return value
 
-
-from typing import Any
 
 Base: Any = declarative_base()
 

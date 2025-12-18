@@ -71,9 +71,9 @@ class Mutation:
             return None
 
         if input.name:
-            tenant.name = input.name
+            tenant.name = input.name  # type: ignore
         if input.plan:
-            tenant.plan = input.plan
+            tenant.plan = input.plan  # type: ignore
 
         db.commit()
         db.refresh(tenant)

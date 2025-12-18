@@ -1,8 +1,8 @@
-# 🛡️ Guardrails API
+# 🛡️ PhiBlock API
 
 **A Production-Ready AI Prompt Compliance & Security Layer**
 
-Guardrails is a real-time API firewall that filters AI prompts before they reach LLMs like OpenAI or Claude. It detects PII, blocks prompt injection attacks, redacts sensitive content, and enforces compliance rules for HIPAA, GDPR, and PCI-DSS.
+PhiBlock is a real-time API firewall that filters AI prompts before they reach LLMs like OpenAI or Claude. It detects PII, blocks prompt injection attacks, redacts sensitive content, and enforces compliance rules for HIPAA, GDPR, and PCI-DSS.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/)

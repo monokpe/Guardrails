@@ -1,6 +1,6 @@
-# Contributing to Guardrails
+# Contributing to PhiBlock
 
-Thank you for contributing to Guardrails! This document provides guidelines to maintain code quality and prevent "AI slop" (verbose, unnecessary, or low-quality code).
+Thank you for contributing to PhiBlock! This document provides guidelines to maintain code quality and prevent "AI slop" (verbose, unnecessary, or low-quality code).
 
 ## Code Quality Standards
 

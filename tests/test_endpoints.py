@@ -64,6 +64,7 @@ def test_analyze_endpoint_success(client, db_session):
 def test_rate_limiting(client, db_session):
     # Clear any existing fallback counters and force fallback mode
     from app import rate_limiting
+
     rate_limiting._fallback_counters.clear()
     original_redis = rate_limiting.redis_client
     rate_limiting.redis_client = None  # Force fallback mode
@@ -87,8 +88,14 @@ def test_rate_limiting(client, db_session):
         headers = {"X-API-Key": plain_key}
 
         # First two requests should succeed
-        assert client.post("/v1/analyze", json={"prompt": "test 1"}, headers=headers).status_code == 200
-        assert client.post("/v1/analyze", json={"prompt": "test 2"}, headers=headers).status_code == 200
+        assert (
+            client.post("/v1/analyze", json={"prompt": "test 1"}, headers=headers).status_code
+            == 200
+        )
+        assert (
+            client.post("/v1/analyze", json={"prompt": "test 2"}, headers=headers).status_code
+            == 200
+        )
 
         # Third request should be rate limited
         response = client.post("/v1/analyze", json={"prompt": "test 3"}, headers=headers)

@@ -58,7 +58,7 @@ class TestRuleCaching(unittest.TestCase):
         self.assertEqual(rules[0].framework, ComplianceFramework.GDPR.value)
 
         # Verify Redis get was called
-        mock_redis.get.assert_called_with("guardrails:rules:all")
+        mock_redis.get.assert_called_with("phiblock:rules:all")
 
         # Verify Loader was NOT called
         mock_loader_cls.assert_not_called()
@@ -84,7 +84,7 @@ class TestRuleCaching(unittest.TestCase):
         self.assertEqual(rules[0].id, "rule_1")
 
         # Verify Redis get was called
-        mock_redis.get.assert_called_with("guardrails:rules:all")
+        mock_redis.get.assert_called_with("phiblock:rules:all")
 
         # Verify Loader WAS called
         mock_loader_cls.assert_called_once()
@@ -93,7 +93,7 @@ class TestRuleCaching(unittest.TestCase):
         # Verify Redis setex was called to cache the result
         # Check that the call argument contains the rule ID (simple check)
         args, _ = mock_redis.setex.call_args
-        self.assertEqual(args[0], "guardrails:rules:all")
+        self.assertEqual(args[0], "phiblock:rules:all")
         self.assertEqual(args[1], 3600)
         self.assertIn('"id": "rule_1"', args[2])
 

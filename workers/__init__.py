@@ -1,7 +1,7 @@
 """
 Celery Workers Module
 
-Async task processing for Guardrails compliance engine.
+Async task processing for PhiBlock compliance engine.
 
 Tasks:
 - PII Detection (async)

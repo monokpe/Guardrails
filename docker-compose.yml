@@ -6,7 +6,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=postgresql://user:password@db:5432/guardrails
+      - DATABASE_URL=postgresql://user:password@db:5432/phiblock
       - REDIS_URL=redis://redis:6379/0
       - CACHE_ENABLED=true
     depends_on:
@@ -15,12 +15,22 @@ services:
     volumes:
       - .:/app
 
+  worker:
+    build: .
+    command: celery -A workers.celery_app worker --loglevel=info
+    environment:
+      - DATABASE_URL=postgresql://user:password@db:5432/phiblock
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - db
+      - redis
+
   db:
-    image: postgres:15-alpine
+    image: postgres:15
     environment:
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=guardrails
+      - POSTGRES_DB=phiblock
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:

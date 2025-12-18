@@ -17,7 +17,7 @@ CACHE_ENABLED = os.getenv("CACHE_ENABLED", "true").lower() == "true"
 CACHE_TTL = int(os.getenv("CACHE_TTL", "300"))  # 5 minutes default
 
 try:
-    import redis  # type: ignore
+    import redis
     from redis import Redis
 
     REDIS_AVAILABLE = True
@@ -41,7 +41,7 @@ def generate_cache_key(prompt: str, tenant_id: str) -> str:
         Cache key in format: guardrails:cache:{tenant_id}:{prompt_hash}
     """
     prompt_hash = hashlib.sha256(prompt.encode()).hexdigest()[:16]
-    return f"guardrails:cache:{tenant_id}:{prompt_hash}"
+    return f"phiblock:cache:{tenant_id}:{prompt_hash}"
 
 
 def get_cached_result(prompt: str, tenant_id: str) -> Optional[Dict[str, Any]]:
@@ -121,11 +121,11 @@ def clear_tenant_cache(tenant_id: str) -> int:
         return 0
 
     try:
-        pattern = f"guardrails:cache:{tenant_id}:*"
+        pattern = f"phiblock:cache:{tenant_id}:*"
         keys = cast(list[str], redis_client.keys(pattern))
 
         if keys:
-            deleted = cast(int, redis_client.delete(*keys))
+            deleted = redis_client.delete(*keys)
             logger.info(f"Cleared {deleted} cache entries for tenant {tenant_id}")
             return deleted
 
@@ -152,7 +152,7 @@ def get_cache_stats() -> Dict[str, Any]:
     if REDIS_AVAILABLE and redis_client:
         try:
             info = cast(Dict[str, Any], redis_client.info("stats"))
-            stats["total_keys"] = cast(int, redis_client.dbsize())
+            stats["total_keys"] = redis_client.dbsize()
             stats["hits"] = info.get("keyspace_hits", 0)
             stats["misses"] = info.get("keyspace_misses", 0)
         except Exception as e:
