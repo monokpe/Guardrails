@@ -6,7 +6,6 @@ from integrations.langchain_integration import PhiBlockCallbackHandler, PhiBlock
 
 
 class TestLangChainIntegration:
-
     @pytest.fixture
     def mock_requests(self):
         with patch("integrations.langchain_integration.requests") as mock:
